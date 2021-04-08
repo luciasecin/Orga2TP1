@@ -47,6 +47,30 @@ int main (void){
     FILE *fp = fopen("texto.txt", "w");
     int32_t a = 68;
     intPrint(&a, fp);
+
+    //TEST STRCMP
+
+    char* s_1 = "holaa";
+    char* s_2 = "holaa";
+
+    int32_t result = strCmp(s_1, s_2);
+
+    printf("Test strCmp: %d\n", result);
+
+    //TEST STRPRINT
+
+    FILE *fp2 = fopen("texto2.txt", "w");
+    char* s = "uwu";
+    strPrint(s, fp2);
+
+    //TEST STRCLONE
+
+    char* s_clon = strClone(s);
+    printf("Palabra magica: %s\n", s_clon);
+
+    //TEST STRDELETE
+    strDelete(s_clon);
+
     return 0;
 }
 

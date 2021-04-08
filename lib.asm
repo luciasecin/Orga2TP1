@@ -38,7 +38,8 @@ extern free
 extern fprintf
 
 section .data
-    formato_fprintf: db "%d", 10, 0
+    formato_fprintf_i: db "%d", 10, 0
+    formato_fprintf_s: db "%s", 10, 0
 
 section .text
 
@@ -107,7 +108,7 @@ intPrint:
 
     mov edx, [rdi]
     mov rdi, rsi
-    mov rsi, formato_fprintf
+    mov rsi, formato_fprintf_i
     call fprintf  
 
     pop rbp
@@ -118,20 +119,63 @@ intPrint:
 ; int32_t strCmp(char* a, char* b)
 strCmp:
     push rbp
-    mov rbp, rsp     ;pila alineada
+    mov rbp, rsp     ;pila alineada 
+    push rbx
+    
+    mov rcx, 0
 
+    .cmp:
+    mov bl, [rdi+rcx]
+    mov dl, [rsi+rcx]
+    add rcx, 1
+    cmp bl, dl
+    jg .mayor
+    jl .menor
+    cmp bl, 0
+    je .mismos
+    jmp .cmp
+    
+    .mismos:
+    mov rax, 0
+    jmp .fin
+    
+    .mayor:
+    mov rax, -1
+    jmp .fin
+    
+    .menor:
+    mov rax, 1
     
 
+    .fin:
+    pop rbx
     pop rbp
     ret
 
 ; char* strClone(char* a)
 strClone:
     push rbp
-    mov rbp, rsp     ;pila alineada
+    mov rbp, rsp     ;pila alineada\
 
+    mov rsi, rdi
+    call strLen
+
+    .allocate:
+    inc rax
+    mov rdi, rax
+    call malloc
+    mov rcx, 0
+
+    .write:
+    mov dl, [rsi + rcx] 
+    mov [rax + rcx], dl
+    inc rcx
+    cmp dl, 0
+    je .fin
+    jmp .write
     
-
+     
+    .fin:
     pop rbp
     ret
 
@@ -140,17 +184,22 @@ strDelete:
     push rbp
     mov rbp, rsp     ;pila alineada
 
-    
+    call free
 
     pop rbp
     ret
 
 ; void strPrint(char* a, FILE* pFile)
+; rdi -> *a
+; rsi -> *pFile
 strPrint:
     push rbp
     mov rbp, rsp     ;pila alineada
 
-    
+    mov rdx, rdi
+    mov rdi, rsi
+    mov rsi, formato_fprintf_s
+    call fprintf  
 
     pop rbp
     ret
@@ -160,8 +209,17 @@ strLen:
     push rbp
     mov rbp, rsp     ;pila alineada
 
-    
+    mov rcx, 0
 
+    .count:
+    mov dl, [rdi+rcx]
+    cmp dl, 0
+    je .fin
+    inc rcx
+    jmp .count
+    
+    .fin:
+    mov rax, rcx
     pop rbp
     ret
 
