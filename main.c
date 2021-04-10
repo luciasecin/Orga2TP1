@@ -9,7 +9,7 @@
 
 int main (void){  
 
-    //TEST INTCMP
+    //TEST INTCMP///////////////////////////////////////////////////////////////////////
 
     bool res = true;
     for (int32_t i = 0; i < 10; i++){
@@ -26,7 +26,8 @@ int main (void){
 
     printf("Test intCmp: %s\n", res ? "Paso el test" : "No paso el test");
 
-    //TEST INTCLONE
+    //TEST INTCLONE///////////////////////////////////////////////////////////////////////
+
     int32_t *temp[10];
     res = true;
     for (int32_t i = 0; i < (int)(sizeof(temp)/sizeof(temp[0])); i++){
@@ -36,40 +37,45 @@ int main (void){
     
     printf("Test intClone: %s\n", res ? "Paso el test" : "No paso el test");
 
-    //TEST INTDELETE
+    //TEST INTDELETE///////////////////////////////////////////////////////////////////////
 
     for (int32_t i = 0; i < (int)(sizeof(temp)/sizeof(temp[0])); i++) {
         intDelete(temp[i]);
     }
-    
-    //TEST INTPRINT
 
-    FILE *fp = fopen("texto.txt", "w");
+    //TEST INTPRINT///////////////////////////////////////////////////////////////////////
+
+    FILE *fp_int = fopen("int_print.txt", "w");
     int32_t a = 68;
-    intPrint(&a, fp);
+    intPrint(&a, fp_int);
+    fclose(fp_int);
 
-    //TEST STRCMP
+    //TEST STRCMP///////////////////////////////////////////////////////////////////////
 
-    char* s_1 = "holaa";
-    char* s_2 = "holaa";
+    char* s_1 = "sebas"; //mayor
+    char* s_2 = "lucy"; //menor
+    res = true;
 
-    int32_t result = strCmp(s_1, s_2);
+    res = 0 == strCmp(s_1, s_1) && 1 == strCmp(s_2, s_1) && -1 == strCmp(s_1, s_2) && 0 == strCmp(s_2,s_2);
 
-    printf("Test strCmp: %d\n", result);
+    printf("Test strCmp: %s\n", res ? "Paso el test" : "No paso el test");
 
-    //TEST STRPRINT
+    //TEST STRPRINT///////////////////////////////////////////////////////////////////////
 
-    FILE *fp2 = fopen("texto2.txt", "w");
-    char* s = "uwu";
-    strPrint(s, fp2);
+    FILE *fp_str = fopen("str_print.txt", "w");
+    char* s = "Paso el test";
+    strPrint(s, fp_str);
+    fclose(fp_str);
 
-    //TEST STRCLONE
+    //TEST STRCLONE///////////////////////////////////////////////////////////////////////
 
     char* s_clon = strClone(s);
-    printf("Palabra magica: %s\n", s_clon);
+    printf("Test strClone: %s\n", s_clon);
 
-    //TEST STRDELETE
+    //TEST STRDELETE///////////////////////////////////////////////////////////////////////
+
     strDelete(s_clon);
+
 
     return 0;
 }
