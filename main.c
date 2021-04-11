@@ -76,6 +76,34 @@ int main (void){
 
     strDelete(s_clon);
 
+    //TESTS ARRAY/////////////////////////////////////////////////////////////////////////
+
+    type_t type = 3;
+    uint8_t capacity = 3; //no puedo seguir vpy a llorar un rato a la banieira si queres mas tarde intentar de nuevp avisame
+    // intenta una ultima ves por consola
+    // creo que se arreglo el delete
+    //oki, ?? f no? con los chicos estamos con el gdb, y podemos ver que registros se cambian con el malloc
+    //me sigue tirando error, dejame que me banio y si queres vemos el gdb, ????? dale
+     // cuantos bytes perdemos? 24? si
+     // no ves el 
+     // no, no se por que se me cerro y no puedo ver
+     //ahi? nope apreta el play arriba a la derechadsps vemos, anda tranca kookkko
+    array_t* array = arrayNew(type, capacity);
+    uint32_t size = arrayGetSize(array);
+
+    printf("Test arrayGetSize1: %d", size);
+
+    arrayDelete(array);
+
+    /*//TEST CARDNEW, CARDGETSUIT, CARDGETNUMBER ////////////////////////////////////////////
+
+    char* suit = "espada";
+    int32_t number = 9;
+    card_t* carta = cardNew(suit, &number);
+
+    res = true;
+    res = (suit == cardGetSuit(carta)) && (number == *cardGetNumber(carta));
+    printf("Test cardNew, cardGetSuit & cardGetNumber: %s\n", res ? "Paso el test" : "No paso el test");*/
 
     return 0;
 }

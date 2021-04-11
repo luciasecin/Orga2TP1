@@ -226,12 +226,38 @@ strLen:
 ; ** Array **
 
 ; array_t* arrayNew(type_t t, uint8_t capacity)
+; rdi -> type
+; rsi -> capacity
 arrayNew:
     push rbp
     mov rbp, rsp     ;pila alineada
+    push r9
+    push r10
+    push r12
+    sub rsp, 8
 
-    
+    mov e10, edi ; type
+    mov e12, esi
 
+    mov eax, e12
+    mov cl, 8
+    mul cl
+    movzx rdi, al
+    call malloc ; rax ->**data
+    mov r9, rax
+
+    mov rdi, 16
+    call malloc
+
+    mov [rax], r10
+    mov byte [rax+4], 0
+    mov [rax+5], esi
+    mov [rax+8], r9
+
+    add rsp, 8
+    pop r12
+    pop r10
+    pop r9
     pop rbp
     ret
 
@@ -240,18 +266,19 @@ arrayGetSize:
     push rbp
     mov rbp, rsp     ;pila alineada
 
-    
+    mov rax, [rdi + 4];
 
     pop rbp
     ret
 
 ; void  arrayAddLast(array_t* a, void* data)
+; rdi -> a
+; rsi -> data
 arrayAddLast:
     push rbp
     mov rbp, rsp     ;pila alineada
 
     
-
     pop rbp
     ret
 
@@ -260,7 +287,7 @@ arrayGet:
     push rbp
     mov rbp, rsp     ;pila alineada
 
-    
+    ; ir a la posicion i*8 y deberia estar ahi fml
 
     pop rbp
     ret
@@ -290,7 +317,11 @@ arrayDelete:
     push rbp
     mov rbp, rsp     ;pila alineada
 
-    
+    mov rsi, rdi
+    mov rdi, [rdi+8]
+    call free
+    mov rdi, rsi
+    call free
 
     pop rbp
     ret
@@ -383,8 +414,7 @@ listDelete:
 cardNew:
     push rbp
     mov rbp, rsp     ;pila alineada
-
-    
+      
 
     pop rbp
     ret
@@ -394,8 +424,6 @@ cardGetSuit:
     push rbp
     mov rbp, rsp     ;pila alineada
 
-    
-
     pop rbp
     ret
 
@@ -403,8 +431,6 @@ cardGetSuit:
 cardGetNumber:
     push rbp
     mov rbp, rsp     ;pila alineada
-
-    
 
     pop rbp
     ret
@@ -434,7 +460,6 @@ cardClone:
     push rbp
     mov rbp, rsp     ;pila alineada
 
-    
 
     pop rbp
     ret
@@ -454,7 +479,7 @@ cardDelete:
     push rbp
     mov rbp, rsp     ;pila alineada
 
-    
+    call free
 
     pop rbp
     ret
