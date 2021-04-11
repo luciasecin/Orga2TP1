@@ -236,10 +236,10 @@ arrayNew:
     push r12
     sub rsp, 8
 
-    mov e10, edi ; type
-    mov e12, esi
+    mov r10d, edi ; type
+    mov r12d, esi
 
-    mov eax, e12
+    mov eax, r12d
     mov cl, 8
     mul cl
     movzx rdi, al
@@ -249,9 +249,9 @@ arrayNew:
     mov rdi, 16
     call malloc
 
-    mov [rax], r10
+    mov [rax], r10d
     mov byte [rax+4], 0
-    mov [rax+5], esi
+    mov [rax+5], r12d
     mov [rax+8], r9
 
     add rsp, 8
@@ -266,7 +266,7 @@ arrayGetSize:
     push rbp
     mov rbp, rsp     ;pila alineada
 
-    mov rax, [rdi + 4];
+    mov rax, [rdi + 4] 
 
     pop rbp
     ret

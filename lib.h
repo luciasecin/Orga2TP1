@@ -47,10 +47,10 @@ uint32_t strLen(char* a);
 /** Array **/
 
 typedef struct s_array {
-	type_t  type;
-	uint8_t size;
-	uint8_t capacity;
-	void** data;
+	type_t  type;			//0
+	uint8_t size;			//4 //1		4 type + 1 size (off 4)+ 1 capacity(off 5) + 2 para alinear + 8 de data(off 8)/tam 16
+	uint8_t capacity;		//5 //1
+	void** data;			//8	//8
 } array_t;
 
 array_t* arrayNew(type_t t, uint8_t capacity);
