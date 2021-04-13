@@ -41,6 +41,16 @@ funcPrint_t* getPrintFunction(type_t t) {
 /** Array **/
 
 void  arrayPrint(array_t* a, FILE* pFile) {
+    fprintf(pFile, "[");
+    for (uint8_t i = 0; i < a->size; i++)
+    {
+        void* item = arrayGet(a, i);
+        funcPrint_t* func = getPrintFunction(a->type);
+        func(item, pFile);
+        if(i != a->size-1)
+            fprintf(pFile, ", ");
+    }
+    fprintf(pFile, "]");
 }
 
 /** Lista **/

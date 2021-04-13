@@ -78,12 +78,24 @@ int main (void){
 
     //TESTS ARRAY/////////////////////////////////////////////////////////////////////////
 
-    type_t type = 3;
+    type_t type = 2;
     uint8_t capacity = 3;
     array_t* array = arrayNew(type, capacity);
-    uint32_t size = arrayGetSize(array);
 
-    printf("Test arrayGetSize1: %d", size);
+    char* dato = "cuaki";
+    char* dato_2 = "cuak";
+    arrayAddLast(array, &dato);
+    arrayAddLast(array, &dato_2);
+    arrayAddLast(array, &dato);
+    uint8_t size = arrayGetSize(array);
+
+    arraySwap(array, 1, 2);
+
+    printf("Test arrayGetSize: %d\n", size);
+
+    FILE *fp_array = fopen("array_print.txt", "w");
+    arrayPrint(array, fp_array);    
+    fclose(fp_array);
 
     arrayDelete(array);
 

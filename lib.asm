@@ -36,10 +36,11 @@ global cardPrint
 extern malloc
 extern free
 extern fprintf
+extern getCloneFunction
 
 section .data
-    formato_fprintf_i: db "%d", 10, 0
-    formato_fprintf_s: db "%s", 10, 0
+    formato_fprintf_i: db "%d", 0
+    formato_fprintf_s: db "%s", 0
 
 section .text
 
@@ -249,6 +250,7 @@ arrayNew:
     mov rdi, 16
     call malloc
 
+    mov qword [rax], 0
     mov [rax], r10d
     mov byte [rax+4], 0
     mov [rax+5], r12d
@@ -277,8 +279,41 @@ arrayGetSize:
 arrayAddLast:
     push rbp
     mov rbp, rsp     ;pila alineada
+    push r9
+    push r10
 
+    mov rax, 0
+    mov rdx, rdi ; struct
+    mov al, [rdx + 4]  ; size
+    mov dil, [rdx + 5]   ; cap
+    cmp al, dil
+    je .fin
+
+    .agregar:
+    mov rdi, [rdx + 8] ;primer puntero del array de data
     
+    mov cl, 8
+    mul cl
+    add rax, rdi
+    mov rdi, rax ; principio de los 8 bytes del nuevo dato
+    
+    mov rax, [rdx + 4]  ; size
+    inc rax
+    mov [rdx+4], rax
+
+    mov r9, rdi    ; inicio del struct array
+    mov r10, rsi    ; puntero a data
+    
+    mov rdi, 0
+    mov edi, [edx]          ; paso a rdi el type de la funcion
+    call getCloneFunction   ; llamo a la funcion para clonar queda en rax el puntero 
+    mov rdi, r10            ; pongo en rdi lo que hay que copiar
+    call rax                ; llamo al clonador magico, en rax esta lo clonado
+    mov [r9], rax
+
+    .fin:
+    pop r10
+    pop r9
     pop rbp
     ret
 
@@ -287,8 +322,21 @@ arrayGet:
     push rbp
     mov rbp, rsp     ;pila alineada
 
-    ; ir a la posicion i*8 y deberia estar ahi fml
+    mov rax, 0
+    mov rdx, rdi ; struct
+    mov al, [rdx + 4]  ; size
+    cmp al, sil
+    je .fin
+    mov al, sil
 
+    mov rdi, [rdx + 8] ;primer puntero del array de data
+    
+    mov cl, 8
+    mul cl
+    add rax, rdi
+    mov rax, [rax]
+
+    .fin:
     pop rbp
     ret
 
@@ -297,8 +345,7 @@ arrayRemove:
     push rbp
     mov rbp, rsp     ;pila alineada
 
-    
-
+    .fin:
     pop rbp
     ret
 
@@ -307,8 +354,38 @@ arraySwap:
     push rbp
     mov rbp, rsp     ;pila alineada
 
-    
+    mov rax, 0
+    mov al, [rdi + 4]  ; size
+    cmp sil, al
+    jge .fin
+    cmp dl, al
+    jge .fin
+    cmp sil, dl
+    je .fin
 
+    .calculo:
+    mov rdi, [rdi + 8] ;primer puntero del array de data
+    
+    mov rax, 0
+    mov al, sil
+    mov cl, 8
+    mul cl
+    add rax, rdi
+    mov rsi, rax ; puntero a i
+
+    mov rax, 0
+    mov al, dl
+    mov cl, 8
+    mul cl
+    add rax, rdi ; puntero a j en rax
+
+    .swap:
+    mov rdi, [rsi]
+    mov rdx, [rax]
+    mov [rsi], rdx
+    mov [rax], rdi
+    
+    .fin:
     pop rbp
     ret
 
