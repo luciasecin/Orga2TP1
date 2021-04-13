@@ -78,18 +78,22 @@ int main (void){
 
     //TESTS ARRAY/////////////////////////////////////////////////////////////////////////
 
-    type_t type = 2;
+    //type_t type = TypeString;
+    type_t type = TypeInt;
     uint8_t capacity = 3;
     array_t* array = arrayNew(type, capacity);
 
-    char* dato = "cuaki";
-    char* dato_2 = "cuak";
+    //char* dato = "lucy";
+    //char* dato_2 = "sebas";
+    uint32_t dato = 4;
+    uint32_t dato_2 = 7;
     arrayAddLast(array, &dato);
     arrayAddLast(array, &dato_2);
     arrayAddLast(array, &dato);
+    arrayRemove(array, 1);
     uint8_t size = arrayGetSize(array);
 
-    arraySwap(array, 1, 2);
+    //arrayRemove(array, 1);
 
     printf("Test arrayGetSize: %d\n", size);
 
@@ -98,6 +102,8 @@ int main (void){
     fclose(fp_array);
 
     arrayDelete(array);
+
+    printf("FIN\n");
 
     /*//TEST CARDNEW, CARDGETSUIT, CARDGETNUMBER ////////////////////////////////////////////
 

@@ -107,6 +107,7 @@ intPrint:
     push rbp
     mov rbp, rsp     ;pila alineada
 
+    mov rax, 0
     mov edx, [rdi]
     mov rdi, rsi
     mov rsi, formato_fprintf_i
@@ -197,6 +198,7 @@ strPrint:
     push rbp
     mov rbp, rsp     ;pila alineada
 
+    mov rax, 0
     mov rdx, rdi
     mov rdi, rsi
     mov rsi, formato_fprintf_s
@@ -252,7 +254,7 @@ arrayNew:
 
     mov qword [rax], 0
     mov [rax], r10d
-    mov byte [rax+4], 0
+    mov qword [rax+4], 0
     mov [rax+5], r12d
     mov [rax+8], r9
 
@@ -297,9 +299,7 @@ arrayAddLast:
     add rax, rdi
     mov rdi, rax ; principio de los 8 bytes del nuevo dato
     
-    mov rax, [rdx + 4]  ; size
-    inc rax
-    mov [rdx+4], rax
+    inc byte [rdx + 4]
 
     mov r9, rdi    ; inicio del struct array
     mov r10, rsi    ; puntero a data
@@ -325,8 +325,8 @@ arrayGet:
     mov rax, 0
     mov rdx, rdi ; struct
     mov al, [rdx + 4]  ; size
-    cmp al, sil
-    je .fin
+    cmp sil, al
+    jge .fin
     mov al, sil
 
     mov rdi, [rdx + 8] ;primer puntero del array de data
@@ -344,8 +344,56 @@ arrayGet:
 arrayRemove:
     push rbp
     mov rbp, rsp     ;pila alineada
+    push r9
+    push r10
+    push rbx
+    sub rbp, 8
+
+    ;Quita el i-esimo elemento del arreglo, si i se encuentra fuera de rango, retorna 0. El arreglo es
+    ;reacomodado de forma que ese elemento indicado sea quitado y retornado.
+
+    mov rax, 0
+    mov al, [rdi + 4]  ; size
+    cmp sil, al
+    jge .fueraDeRango
+    mov r9, rdi        ;a
+    mov bl, al         ;size
+    mov r10, rsi       ;i
+
+    .ciclo:
+    mov rdi, r9
+    mov rsi, 0
+    mov rdx, 0
+    mov rsi, r10 
+    inc rsi          ;j
+    mov rdx, r10     ;i
+    cmp sil, bl
+    je .borrarUltimo
+    call arraySwap
+    inc r10
+
+    .borrarUltimo:
+    mov rdx, [r9 + 8]
+    mov rax, 0
+    mov rax, r10
+    mov cl, 8
+    mul cl
+    add rax, rdx
+    mov rdi, [rax]
+    call free
+    dec bl
+    mov byte [r9 + 4], bl
+    jmp .fin
+
+    .fueraDeRango:
+    mov rax, 0
+    jmp .fin
 
     .fin:
+    add rbp, 8
+    pop rbx
+    pop r10
+    pop r9
     pop rbp
     ret
 
@@ -393,13 +441,34 @@ arraySwap:
 arrayDelete:
     push rbp
     mov rbp, rsp     ;pila alineada
+    push rbx
+    push r12
 
+    mov r12, rdi
+    mov rbx, 0
+    mov rax, [rdi + 4]
+    mov bl, al  ;size
+
+    .ciclo:
+    mov rdi, r12
+    cmp bl, 0
+    je .fin
+    dec rbx
+    mov rsi, 0
+    mov rsi, rbx
+    call arrayRemove
+    jmp .ciclo
+
+    .fin:
+    mov rdi, r12
     mov rsi, rdi
     mov rdi, [rdi+8]
     call free
     mov rdi, rsi
     call free
 
+    pop r12
+    pop rbx
     pop rbp
     ret
 
