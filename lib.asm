@@ -157,9 +157,11 @@ strCmp:
 ; char* strClone(char* a)
 strClone:
     push rbp
-    mov rbp, rsp     ;pila alineada\
+    mov rbp, rsp     ;pila alineada
+    push r12
+    sub rsp, 8
 
-    mov rsi, rdi
+    mov r12, rdi
     call strLen
 
     .allocate:
@@ -169,7 +171,7 @@ strClone:
     mov rcx, 0
 
     .write:
-    mov dl, [rsi + rcx] 
+    mov dl, [r12 + rcx] 
     mov [rax + rcx], dl
     inc rcx
     cmp dl, 0
@@ -178,6 +180,8 @@ strClone:
     
      
     .fin:
+    add rsp, 8
+    pop r12
     pop rbp
     ret
 
@@ -347,7 +351,7 @@ arrayRemove:
     push r9
     push r10
     push rbx
-    sub rbp, 8
+    sub rsp, 8
 
     ;Quita el i-esimo elemento del arreglo, si i se encuentra fuera de rango, retorna 0. El arreglo es
     ;reacomodado de forma que ese elemento indicado sea quitado y retornado.
@@ -390,7 +394,7 @@ arrayRemove:
     jmp .fin
 
     .fin:
-    add rbp, 8
+    add rsp, 8
     pop rbx
     pop r10
     pop r9

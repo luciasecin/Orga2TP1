@@ -63,7 +63,7 @@ int main (void){
     //TEST STRPRINT///////////////////////////////////////////////////////////////////////
 
     FILE *fp_str = fopen("str_print.txt", "w");
-    char* s = "Paso el test";
+    char* s = "hola";
     strPrint(s, fp_str);
     fclose(fp_str);
 
@@ -78,32 +78,48 @@ int main (void){
 
     //TESTS ARRAY/////////////////////////////////////////////////////////////////////////
 
-    //type_t type = TypeString;
-    type_t type = TypeInt;
-    uint8_t capacity = 3;
-    array_t* array = arrayNew(type, capacity);
+    //string
 
-    //char* dato = "lucy";
-    //char* dato_2 = "sebas";
-    uint32_t dato = 4;
-    uint32_t dato_2 = 7;
-    arrayAddLast(array, &dato);
-    arrayAddLast(array, &dato_2);
-    arrayAddLast(array, &dato);
-    arrayRemove(array, 1);
-    uint8_t size = arrayGetSize(array);
-
-    //arrayRemove(array, 1);
-
-    printf("Test arrayGetSize: %d\n", size);
+    uint8_t capacity_str = 3;
+    type_t type = TypeString;
+    array_t* array_str = arrayNew(type, capacity_str);
+    char* str_1 = "lucy";
+    char* str_2 = "y";
+    char* str_3 = "sebas";
+    arrayAddLast(array_str, str_1);
+    arrayAddLast(array_str, str_2);
+    arrayAddLast(array_str, str_3);
+    uint8_t size_str = arrayGetSize(array_str);
+    printf("Test arrayGetSize_str: %d\n", size_str);
 
     FILE *fp_array = fopen("array_print.txt", "w");
-    arrayPrint(array, fp_array);    
+    arrayPrint(array_str, fp_array);
+    fprintf(fp_array, "\n");
+
+    arrayDelete(array_str);
+
+    //int
+
+    uint8_t capacity_int = 5;
+    type_t type_int = TypeInt;
+    array_t *array_int = arrayNew(type_int, capacity_int);
+    uint32_t dato_1 = 4;
+    uint32_t dato_2 = 7;
+    uint32_t dato_3 = 6;
+    arrayAddLast(array_int, &dato_1);
+    arrayAddLast(array_int, &dato_2);
+    arrayAddLast(array_int, &dato_3);
+    arrayAddLast(array_int, &dato_3);
+    arrayAddLast(array_int, &dato_1);
+    arrayRemove(array_int, 3);
+    uint8_t size_int = arrayGetSize(array_int);
+    printf("Test arrayGetSize_int: %d\n", size_int);
+
+    arrayPrint(array_int, fp_array);
     fclose(fp_array);
 
-    arrayDelete(array);
+    arrayDelete(array_int);
 
-    printf("FIN\n");
 
     /*//TEST CARDNEW, CARDGETSUIT, CARDGETNUMBER ////////////////////////////////////////////
 
@@ -114,6 +130,8 @@ int main (void){
     res = true;
     res = (suit == cardGetSuit(carta)) && (number == *cardGetNumber(carta));
     printf("Test cardNew, cardGetSuit & cardGetNumber: %s\n", res ? "Paso el test" : "No paso el test");*/
+
+    printf("FIN\n");
 
     return 0;
 }
