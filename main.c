@@ -101,7 +101,7 @@ int main (void){
     //int
 
     uint8_t capacity_int = 5;
-    type_t type_int = TypeInt;
+    type_t type_int = TypeString;
     array_t *array_int = arrayNew(type_int, capacity_int);
     uint32_t dato_1 = 4;
     uint32_t dato_2 = 7;
@@ -119,6 +119,35 @@ int main (void){
     fclose(fp_array);
 
     arrayDelete(array_int);
+
+    // TEST LISTS ///////////////////////////////////////////////////////////////////////////
+
+    type_t type_list = TypeInt;
+    list_t* list = listNew(type_list);
+
+    listAddFirst(list, &dato_1); //4 //lucy
+    listAddFirst(list, &dato_2); //7 //y
+    listAddFirst(list, &dato_3); //6 //sebas
+    listAddFirst(list, &dato_3); //6 //sebas
+    listAddFirst(list, &dato_1); //4 //lucy
+    listAddFirst(list, &dato_1);  //4 //lucy
+    listAddLast(list, &dato_3);
+    listAddLast(list, &dato_1);
+
+    uint8_t list_size = listGetSize(list);
+    printf("Test listGetSize: %d\n", list_size);
+
+    listRemove(list, 0);
+    listRemove(list, 3);
+
+    list_size = listGetSize(list);
+    printf("Test listGetSize (post remove): %d\n", list_size);
+
+    FILE *fp_list = fopen("list_print.txt", "w");
+    listPrint(list, fp_list);
+    fprintf(fp_list, "\n");
+    fclose(fp_list);
+    listDelete(list);
 
 
     /*//TEST CARDNEW, CARDGETSUIT, CARDGETNUMBER ////////////////////////////////////////////

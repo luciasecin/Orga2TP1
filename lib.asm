@@ -41,6 +41,13 @@ extern getCloneFunction
 section .data
     formato_fprintf_i: db "%d", 0
     formato_fprintf_s: db "%s", 0
+    %define LIST_TYPE 0
+    %define LIST_SIZE 4
+    %define LIST_FIRST 8
+    %define LIST_LAST 16
+    %define NODE_DATA 0
+    %define NODE_NEXT 8
+    %define NODE_PREV 16
 
 section .text
 
@@ -65,7 +72,7 @@ intCmp:
     jg .mayor
 
     mov rax, 1
-    jmp .fin
+    jmp .fin	
     .mayor:
     mov rax, -1
     jmp .fin
@@ -482,9 +489,22 @@ arrayDelete:
 listNew:
     push rbp
     mov rbp, rsp     ;pila alineada
+    push rbx
+    sub rsp, 8
 
+    mov ebx, edi
+    mov rdi, 0
+    mov edi, 24
+
+    call malloc
     
+    mov dword [rax + LIST_TYPE], ebx
+    mov byte [rax + LIST_SIZE], 0
+    mov qword [rax + LIST_FIRST], 0
+    mov qword [rax + LIST_LAST], 0
 
+    add rsp, 8
+    pop rbx
     pop rbp
     ret
 
@@ -493,7 +513,8 @@ listGetSize:
     push rbp
     mov rbp, rsp     ;pila alineada
 
-    
+    mov rax, 0
+    mov al, [rdi + LIST_SIZE]
 
     pop rbp
     ret
@@ -502,9 +523,52 @@ listGetSize:
 listAddFirst:
     push rbp
     mov rbp, rsp     ;pila alineada
+    push rbx
+    push r10
+    push r12
+    sub rsp, 8
 
+    mov r12, rsi
+    mov rbx, rdi
+    mov rdi, 24
+    call malloc
+
+    mov rdx, [rbx + LIST_FIRST]
+    mov [rax + NODE_NEXT], rdx
+    mov dil, [rbx + LIST_SIZE]
+    cmp dil, 1
+    jge .cambiarAnterior
+    jmp .seguir
+
+    .cambiarAnterior:
+    mov [rdx + NODE_PREV], rax
+
+    .seguir:
+    mov qword [rax + NODE_PREV], 0
+
+    mov r10, rax
+
+    mov rdi, 0
+    mov edi, [rbx + LIST_TYPE]          ; paso a rdi el type de la funcion
+    call getCloneFunction               ; llamo a la funcion para clonar queda en rax el puntero 
+    mov rdi, r12                        ; pongo en rdi lo que hay que copiar
+    call rax                            ; llamo al clonador magico, en rax esta lo clonado
+    mov [r10 + NODE_DATA], rax
     
+    mov [rbx + LIST_FIRST], r10
 
+    mov dl, [rbx + LIST_SIZE]
+    cmp dl, 0
+    jne .fin
+    mov [rbx + LIST_LAST], r10
+
+    .fin:
+    inc byte [rbx + LIST_SIZE]
+
+    add rsp, 8
+    pop r12
+    pop r10
+    pop rbx
     pop rbp
     ret
 
@@ -513,8 +577,23 @@ listGet:
     push rbp
     mov rbp, rsp     ;pila alineada
 
-    
+    mov dl, [rdi + LIST_SIZE]
+    cmp sil, dl
+    jge .fin
+    mov rdi, [rdi + LIST_FIRST]
 
+    .ciclo:
+    cmp sil, 0
+    je .salida
+    mov rdi, [rdi + NODE_NEXT]
+    dec sil
+    jmp .ciclo
+
+
+    .salida:
+    mov rax, [rdi + NODE_DATA]
+
+    .fin:
     pop rbp
     ret
 
@@ -522,12 +601,69 @@ listGet:
 listRemove:
     push rbp
     mov rbp, rsp     ;pila alineada
+    push rbx
+    push r12
 
+    ;poner en el next de i-1 a i+1
+    ;poner en el prev de i+1 a i-1
+
+    mov r12, rdi
+    mov rbx, rsi
+    mov dl, [rdi + LIST_SIZE]
+    cmp sil, dl
+    jge .fin
+    dec byte [rdi + LIST_SIZE]
+    mov rdi, [rdi + LIST_FIRST]
     
+    .ciclo:
+    cmp sil, 0
+    je .salida
+    mov rdi, [rdi + NODE_NEXT]
+    dec sil
+    jmp .ciclo
+    
+    .salida:
+    mov rsi, [rdi + NODE_NEXT] ; rsi siguiente
+    mov rdx, [rdi + NODE_PREV] ; rdx anterior
 
+    ;[rdx, rdi, rsi]
+    
+    cmp rsi, 0
+    je .esElUltimo
+    mov [rsi + NODE_PREV], rdx 
+
+    .continuar:
+    cmp rdx, 0
+    je .esElPrimero
+    mov [rdx + NODE_NEXT], rsi          ;siguiente del anterior (rdx) de i es el es siguiente de i
+    jmp .liberarMemoria
+
+    .esElUltimo:
+    mov [r12 + LIST_LAST], rdx            ;nuevo last es el anterior
+    jmp .continuar
+
+    .esElPrimero:
+    mov [r12 + LIST_FIRST], rsi           ;nuevo primero es el siguiente
+    jmp .liberarMemoria
+
+    ;ahora libero la memoria de i
+    ;rdi tiene nodo    
+
+    .liberarMemoria:
+    mov rbx, rdi
+    mov rdi, [rdi + NODE_DATA]
+    call free
+    mov rdi, rbx
+    call free
+
+
+    .fin:
+    pop r12
+    pop rbx
     pop rbp
     ret
 
+   
 ; void  listSwap(list_t* l, uint8_t i, uint8_t j)
 listSwap:
     push rbp
@@ -552,9 +688,27 @@ listClone:
 listDelete:
     push rbp
     mov rbp, rsp     ;pila alineada
+    push rbx
+    push r10
 
-    
+    mov r10, rdi                    ;guardo la lista
+    mov bl, [r10 + LIST_SIZE]       ;guardo en rbx el size de la lista
 
+    .ciclo:
+    cmp bl, 0
+    je .fin
+    mov rdi, r10
+    mov rsi, 0
+    call listRemove
+    dec bl
+    jmp .ciclo
+
+    .fin:
+    mov rdi, r10
+    call free
+
+    pop r10
+    pop rbx
     pop rbp
     ret
 

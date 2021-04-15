@@ -65,11 +65,11 @@ void  arrayPrint(array_t* a, FILE* pFile);
 /* List */
 
 typedef struct s_list {
-	type_t   type;
-	uint8_t  size;
-	struct s_listElem* first;
-	struct s_listElem* last;
-} list_t;
+	type_t   type;			//0
+	uint8_t  size;			//4
+	struct s_listElem* first;	//8	
+	struct s_listElem* last;	//16
+} list_t;	//24
 
 typedef struct s_listElem {
 	void* data;

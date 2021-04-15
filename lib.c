@@ -42,10 +42,9 @@ funcPrint_t* getPrintFunction(type_t t) {
 
 void  arrayPrint(array_t* a, FILE* pFile) {
     fprintf(pFile, "[");
-    for (uint8_t i = 0; i < a->size; i++)
-    {
+    funcPrint_t* func = getPrintFunction(a->type);
+    for (uint8_t i = 0; i < a->size; i++){
         void* item = arrayGet(a, i);
-        funcPrint_t* func = getPrintFunction(a->type);
         func(item, pFile);
         if(i != a->size-1)
             fprintf(pFile, ", ");
@@ -56,9 +55,34 @@ void  arrayPrint(array_t* a, FILE* pFile) {
 /** Lista **/
 
 void listAddLast(list_t* l, void* data){
+    funcClone_t *func = getCloneFunction(l->type);
+    void * newData = func(data);
+
+    listElem_t *newNode = (listElem_t *)malloc(24);
+
+    if (l->size == 0){
+        l->first = newNode;
+        newNode->prev = NULL;
+    } else {
+        l->last->next = newNode;
+        newNode->prev = l->last;
+    }
+    newNode->next = NULL;
+    newNode->data = newData;
+    l->last = newNode;
+    l->size++;
 }
 
 void listPrint(list_t* l, FILE* pFile) {
+    fprintf(pFile, "[");
+    for (uint8_t i = 0; i < l->size; i++){
+        void* item = listGet(l, i);
+        funcPrint_t* func = getPrintFunction(l->type);
+        func(item, pFile);
+        if(i != l->size-1)
+            fprintf(pFile, ", ");
+    }
+    fprintf(pFile, "]");
 }
 
 
