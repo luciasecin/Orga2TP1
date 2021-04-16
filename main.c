@@ -95,7 +95,6 @@ int main (void){
     FILE *fp_array = fopen("array_print.txt", "w");
     arrayPrint(array_str, fp_array);
     fprintf(fp_array, "\n");
-<<<<<<< HEAD
     arrayDelete(array_str);
 
     //int
@@ -105,30 +104,13 @@ int main (void){
     int32_t dato_1 = 4;
     int32_t dato_2 = 7;
     int32_t dato_3 = 6;
-=======
-
-    arrayDelete(array_str);
-
-    //int
-
-    uint8_t capacity_int = 5;
-    type_t type_int = TypeString;
-    array_t *array_int = arrayNew(type_int, capacity_int);
-    uint32_t dato_1 = 4;
-    uint32_t dato_2 = 7;
-    uint32_t dato_3 = 6;
->>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
     arrayAddLast(array_int, &dato_1);
     arrayAddLast(array_int, &dato_2);
     arrayAddLast(array_int, &dato_3);
     arrayAddLast(array_int, &dato_3);
     arrayAddLast(array_int, &dato_1);
-<<<<<<< HEAD
     int32_t* test = (int32_t*)arrayRemove(array_int, 3);
     intDelete(test);
-=======
-    arrayRemove(array_int, 3);
->>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
     uint8_t size_int = arrayGetSize(array_int);
     printf("Test arrayGetSize_int: %d\n", size_int);
 
@@ -154,19 +136,13 @@ int main (void){
     uint8_t list_size = listGetSize(list);
     printf("Test listGetSize: %d\n", list_size);
 
-<<<<<<< HEAD
     //listRemove(list, 0);
     //listRemove(list, 3);
     //listSwap(list, 4, 5);
-=======
-    listRemove(list, 0);
-    listRemove(list, 3);
->>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
 
     list_size = listGetSize(list);
     printf("Test listGetSize (post remove): %d\n", list_size);
 
-<<<<<<< HEAD
     int32_t *test_list = (int32_t *)listRemove(list, 0);
     intDelete(test_list);
 
@@ -218,24 +194,6 @@ int main (void){
     cardDelete(carta_1);
     cardDelete(carta_2);
     cardDelete(carta_3);
-=======
-    FILE *fp_list = fopen("list_print.txt", "w");
-    listPrint(list, fp_list);
-    fprintf(fp_list, "\n");
-    fclose(fp_list);
-    listDelete(list);
-
-
-    /*//TEST CARDNEW, CARDGETSUIT, CARDGETNUMBER ////////////////////////////////////////////
-
-    char* suit = "espada";
-    int32_t number = 9;
-    card_t* carta = cardNew(suit, &number);
-
-    res = true;
-    res = (suit == cardGetSuit(carta)) && (number == *cardGetNumber(carta));
-    printf("Test cardNew, cardGetSuit & cardGetNumber: %s\n", res ? "Paso el test" : "No paso el test");*/
->>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
 
     printf("FIN\n");
 

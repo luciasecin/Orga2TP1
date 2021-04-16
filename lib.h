@@ -85,26 +85,16 @@ void* listGet(list_t* l, uint8_t i);
 void* listRemove(list_t* l, uint8_t i);
 void  listSwap(list_t* l, uint8_t i, uint8_t j);
 void  listDelete(list_t* l);
-<<<<<<< HEAD
 list_t* listClone(list_t* l);
-=======
->>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
 void  listPrint(list_t* l, FILE* pFile);
 
 /** Card **/
 
 typedef struct s_card {
-<<<<<<< HEAD
 	char*     suit;	//0				
 	int32_t* number; //8
 	list_t* stacked; //16
 } card_t;	//24
-=======
-	char*     suit;
-	int32_t* number;
-	list_t* stacked;
-} card_t;
->>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
 
 card_t*  cardNew(char* suit, int32_t* number);
 char*    cardGetSuit(card_t* c);
