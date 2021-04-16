@@ -22,6 +22,10 @@ global listRemove
 global listSwap
 global listClone
 global listDelete
+<<<<<<< HEAD
+=======
+global listPrint
+>>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
 global cardNew
 global cardGetSuit
 global cardGetNumber
@@ -36,15 +40,21 @@ extern malloc
 extern free
 extern fprintf
 extern getCloneFunction
+<<<<<<< HEAD
 extern getDeleteFunction
 extern listPrint
+=======
+>>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
 
 section .data
     formato_fprintf_i: db "%d", 0
     formato_fprintf_s: db "%s", 0
+<<<<<<< HEAD
     formato_fprintf_c_1: db "{", 0
     formato_fprintf_c_2: db " - ", 0
     formato_fprintf_c_3: db "}", 0
+=======
+>>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
     %define LIST_TYPE 0
     %define LIST_SIZE 4
     %define LIST_FIRST 8
@@ -52,9 +62,12 @@ section .data
     %define NODE_DATA 0
     %define NODE_NEXT 8
     %define NODE_PREV 16
+<<<<<<< HEAD
     %define CARD_SUIT 0
     %define CARD_NUMBER 8
     %define CARD_STACKED 16
+=======
+>>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
 
 section .text
 
@@ -307,7 +320,11 @@ arrayAddLast:
     mov al, [rdx + 4]  ; size
     mov dil, [rdx + 5]   ; cap
     cmp al, dil
+<<<<<<< HEAD
     jge .fin
+=======
+    je .fin
+>>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
 
     .agregar:
     mov rdi, [rdx + 8] ;primer puntero del array de data
@@ -319,7 +336,11 @@ arrayAddLast:
     
     inc byte [rdx + 4]
 
+<<<<<<< HEAD
     mov r9, rdi     ; pos del nuevo dato
+=======
+    mov r9, rdi    ; inicio del struct array
+>>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
     mov r10, rsi    ; puntero a data
     
     mov rdi, 0
@@ -362,6 +383,7 @@ arrayGet:
 arrayRemove:
     push rbp
     mov rbp, rsp     ;pila alineada
+<<<<<<< HEAD
     push r12
     push r13
     push r14
@@ -402,6 +424,58 @@ arrayRemove:
     pop r14
     pop r13
     pop r12
+=======
+    push r9
+    push r10
+    push rbx
+    sub rsp, 8
+
+    ;Quita el i-esimo elemento del arreglo, si i se encuentra fuera de rango, retorna 0. El arreglo es
+    ;reacomodado de forma que ese elemento indicado sea quitado y retornado.
+
+    mov rax, 0
+    mov al, [rdi + 4]  ; size
+    cmp sil, al
+    jge .fueraDeRango
+    mov r9, rdi        ;a
+    mov bl, al         ;size
+    mov r10, rsi       ;i
+
+    .ciclo:
+    mov rdi, r9
+    mov rsi, 0
+    mov rdx, 0
+    mov rsi, r10 
+    inc rsi          ;j
+    mov rdx, r10     ;i
+    cmp sil, bl
+    je .borrarUltimo
+    call arraySwap
+    inc r10
+
+    .borrarUltimo:
+    mov rdx, [r9 + 8]
+    mov rax, 0
+    mov rax, r10
+    mov cl, 8
+    mul cl
+    add rax, rdx
+    mov rdi, [rax]
+    call free
+    dec bl
+    mov byte [r9 + 4], bl
+    jmp .fin
+
+    .fueraDeRango:
+    mov rax, 0
+    jmp .fin
+
+    .fin:
+    add rsp, 8
+    pop rbx
+    pop r10
+    pop r9
+>>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
     pop rbp
     ret
 
@@ -451,7 +525,10 @@ arrayDelete:
     mov rbp, rsp     ;pila alineada
     push rbx
     push r12
+<<<<<<< HEAD
     push r13
+=======
+>>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
 
     mov r12, rdi
     mov rbx, 0
@@ -466,11 +543,14 @@ arrayDelete:
     mov rsi, 0
     mov rsi, rbx
     call arrayRemove
+<<<<<<< HEAD
     mov r13, rax
     mov rdi, [r12]
     call getDeleteFunction
     mov rdi, r13
     call rax
+=======
+>>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
     jmp .ciclo
 
     .fin:
@@ -480,8 +560,12 @@ arrayDelete:
     call free
     mov rdi, rsi
     call free
+<<<<<<< HEAD
     
     pop r13
+=======
+
+>>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
     pop r12
     pop rbx
     pop rbp
@@ -604,6 +688,7 @@ listGet:
 ; void* listRemove(list_t* l, uint8_t i)
 listRemove:
     push rbp
+<<<<<<< HEAD
     mov rbp, rsp
     push r12
     push r13
@@ -666,6 +751,70 @@ listRemove:
     pop r12
     pop rbp
     ret 
+=======
+    mov rbp, rsp     ;pila alineada
+    push rbx
+    push r12
+
+    ;poner en el next de i-1 a i+1
+    ;poner en el prev de i+1 a i-1
+
+    mov r12, rdi
+    mov rbx, rsi
+    mov dl, [rdi + LIST_SIZE]
+    cmp sil, dl
+    jge .fin
+    dec byte [rdi + LIST_SIZE]
+    mov rdi, [rdi + LIST_FIRST]
+    
+    .ciclo:
+    cmp sil, 0
+    je .salida
+    mov rdi, [rdi + NODE_NEXT]
+    dec sil
+    jmp .ciclo
+    
+    .salida:
+    mov rsi, [rdi + NODE_NEXT] ; rsi siguiente
+    mov rdx, [rdi + NODE_PREV] ; rdx anterior
+
+    ;[rdx, rdi, rsi]
+    
+    cmp rsi, 0
+    je .esElUltimo
+    mov [rsi + NODE_PREV], rdx 
+
+    .continuar:
+    cmp rdx, 0
+    je .esElPrimero
+    mov [rdx + NODE_NEXT], rsi          ;siguiente del anterior (rdx) de i es el es siguiente de i
+    jmp .liberarMemoria
+
+    .esElUltimo:
+    mov [r12 + LIST_LAST], rdx            ;nuevo last es el anterior
+    jmp .continuar
+
+    .esElPrimero:
+    mov [r12 + LIST_FIRST], rsi           ;nuevo primero es el siguiente
+    jmp .liberarMemoria
+
+    ;ahora libero la memoria de i
+    ;rdi tiene nodo    
+
+    .liberarMemoria:
+    mov rbx, rdi
+    mov rdi, [rdi + NODE_DATA]
+    call free
+    mov rdi, rbx
+    call free
+
+
+    .fin:
+    pop r12
+    pop rbx
+    pop rbp
+    ret
+>>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
 
    
 ; void  listSwap(list_t* l, uint8_t i, uint8_t j)
@@ -673,6 +822,7 @@ listSwap:
     push rbp
     mov rbp, rsp     ;pila alineada
 
+<<<<<<< HEAD
     mov cl, [rdi + LIST_SIZE]
     cmp dl, cl
     jge .fin
@@ -704,6 +854,10 @@ listSwap:
     mov [rax + NODE_DATA], rsi
 
     .fin:
+=======
+    
+
+>>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
     pop rbp
     ret
 
@@ -711,6 +865,7 @@ listSwap:
 listClone:
     push rbp
     mov rbp, rsp     ;pila alineada
+<<<<<<< HEAD
     push r12
     push r13
     push rbx
@@ -739,6 +894,11 @@ listClone:
     pop rbx
     pop r13
     pop r12
+=======
+
+    
+
+>>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
     pop rbp
     ret
 
@@ -746,6 +906,7 @@ listClone:
 listDelete:
     push rbp
     mov rbp, rsp     ;pila alineada
+<<<<<<< HEAD
     push r12
     push r13
     push rbx
@@ -777,12 +938,36 @@ listDelete:
     pop rbx
     pop r13
     pop r12
+=======
+    push rbx
+    push r10
+
+    mov r10, rdi                    ;guardo la lista
+    mov bl, [r10 + LIST_SIZE]       ;guardo en rbx el size de la lista
+
+    .ciclo:
+    cmp bl, 0
+    je .fin
+    mov rdi, r10
+    mov rsi, 0
+    call listRemove
+    dec bl
+    jmp .ciclo
+
+    .fin:
+    mov rdi, r10
+    call free
+
+    pop r10
+    pop rbx
+>>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
     pop rbp
     ret
 
 ; ** Card **
 
 ; card_t* cardNew(char* suit, int32_t* number)
+<<<<<<< HEAD
 
 ;
 ;typedef struct s_card {
@@ -822,6 +1007,13 @@ cardNew:
     pop r14
     pop r13
     pop r12
+=======
+cardNew:
+    push rbp
+    mov rbp, rsp     ;pila alineada
+      
+
+>>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
     pop rbp
     ret
 
@@ -830,8 +1022,11 @@ cardGetSuit:
     push rbp
     mov rbp, rsp     ;pila alineada
 
+<<<<<<< HEAD
     mov rax, [rdi + CARD_SUIT]
 
+=======
+>>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
     pop rbp
     ret
 
@@ -840,8 +1035,11 @@ cardGetNumber:
     push rbp
     mov rbp, rsp     ;pila alineada
 
+<<<<<<< HEAD
     mov rax, [rdi + CARD_NUMBER]
 
+=======
+>>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
     pop rbp
     ret
 
@@ -850,7 +1048,11 @@ cardGetStacked:
     push rbp
     mov rbp, rsp     ;pila alineada
 
+<<<<<<< HEAD
     mov rax, [rdi + CARD_STACKED]
+=======
+    
+>>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
 
     pop rbp
     ret
@@ -859,6 +1061,7 @@ cardGetStacked:
 cardCmp:
     push rbp
     mov rbp, rsp     ;pila alineada
+<<<<<<< HEAD
     push r12
     push r13
 
@@ -881,6 +1084,11 @@ cardCmp:
     .fin:
     pop r13
     pop r12
+=======
+
+    
+
+>>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
     pop rbp
     ret
 
@@ -888,6 +1096,7 @@ cardCmp:
 cardClone:
     push rbp
     mov rbp, rsp     ;pila alineada
+<<<<<<< HEAD
     push r12
     push r13
     sub rsp, 8
@@ -909,10 +1118,15 @@ cardClone:
     add rsp, 8
     pop r13
     pop r12
+=======
+
+
+>>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
     pop rbp
     ret
 
 ; void cardAddStacked(card_t* c, card_t* card)
+<<<<<<< HEAD
 ;Agrega una copia de la carta card a las cartas apiladas debajo de c. La carta debe ser agregada al
 ;comienzo de dicha pila.
 cardAddStacked:
@@ -942,6 +1156,14 @@ cardAddStacked:
     add rsp, 8
     pop r13    
     pop r12
+=======
+cardAddStacked:
+    push rbp
+    mov rbp, rsp     ;pila alineada
+
+    
+
+>>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
     pop rbp
     ret
 
@@ -949,6 +1171,7 @@ cardAddStacked:
 cardDelete:
     push rbp
     mov rbp, rsp     ;pila alineada
+<<<<<<< HEAD
     push r12
     sub rsp, 8
 
@@ -971,10 +1194,16 @@ cardDelete:
 
     add rsp, 8
     pop r12
+=======
+
+    call free
+
+>>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
     pop rbp
     ret
 
 ; void cardPrint(card_t* c, FILE* pFile)
+<<<<<<< HEAD
 ;Escribe la carta c en el stream indicado a través de pFile. El formato de impresión tiene la forma:
 ;{suit-number-list of stacked cards}
 cardPrint:
@@ -1025,5 +1254,13 @@ cardPrint:
     add rsp, 8
     pop r13
     pop r12
+=======
+cardPrint:
+    push rbp
+    mov rbp, rsp     ;pila alineada
+
+    
+
+>>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
     pop rbp
     ret

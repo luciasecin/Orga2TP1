@@ -37,9 +37,16 @@ funcPrint_t* getPrintFunction(type_t t) {
     return 0;
 }
 
+<<<<<<< HEAD
 /** Array **/
 
 void arrayPrint(array_t* a, FILE* pFile) {
+=======
+
+/** Array **/
+
+void  arrayPrint(array_t* a, FILE* pFile) {
+>>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
     fprintf(pFile, "[");
     funcPrint_t* func = getPrintFunction(a->type);
     for (uint8_t i = 0; i < a->size; i++){
@@ -74,6 +81,7 @@ void listAddLast(list_t* l, void* data){
 
 void listPrint(list_t* l, FILE* pFile) {
     fprintf(pFile, "[");
+<<<<<<< HEAD
     if(l != NULL){
         for (uint8_t i = 0; i < l->size; i++){
             void* item = listGet(l, i);
@@ -82,10 +90,22 @@ void listPrint(list_t* l, FILE* pFile) {
             if(i != l->size-1)
                 fprintf(pFile, ", ");
         }
+=======
+    for (uint8_t i = 0; i < l->size; i++){
+        void* item = listGet(l, i);
+        funcPrint_t* func = getPrintFunction(l->type);
+        func(item, pFile);
+        if(i != l->size-1)
+            fprintf(pFile, ", ");
+>>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
     }
     fprintf(pFile, "]");
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 0ab9a87373d780c93157b6c9a764b4d5c717f997
 /** Game **/
 
 game_t* gameNew(void* cardDeck, funcGet_t* funcGet, funcRemove_t* funcRemove, funcSize_t* funcSize, funcPrint_t* funcPrint, funcDelete_t* funcDelete) {
