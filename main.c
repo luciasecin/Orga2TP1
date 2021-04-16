@@ -166,7 +166,7 @@ int main (void){
     char* suit_2 = "oro";
     int32_t number_2 = 5;
     card_t* carta_2 = cardNew(suit_2, &number_2);
-    printf("cardCMP: %d\n", cardCmp(carta_1, carta_2));
+    printf("Test cardCmp: %d\n", cardCmp(carta_1, carta_2));
     char *suit_3 = "copa";
     int32_t number_3 = 3;
     card_t *carta_3 = cardNew(suit_3, &number_3);
