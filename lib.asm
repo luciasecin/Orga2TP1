@@ -257,6 +257,13 @@ arrayNew:
     push r12
     sub rsp, 8
 
+    cmp edi, 3
+    jg .fin
+    cmp edi, 0
+    jl .fin
+    cmp sil, 0
+    jl .fin
+
     mov r10d, edi ; type
     mov r12d, esi
 
@@ -276,6 +283,7 @@ arrayNew:
     mov [rax+5], r12d
     mov [rax+8], r9
 
+    .fin:
     add rsp, 8
     pop r12
     pop r10
@@ -340,6 +348,9 @@ arrayGet:
     push rbp
     mov rbp, rsp     ;pila alineada
 
+    cmp sil, 0
+    jl .fin
+
     mov rax, 0
     mov rdx, rdi ; struct
     mov al, [rdx + 4]  ; size
@@ -366,6 +377,9 @@ arrayRemove:
     push r13
     push r14
     sub rsp, 8
+
+    cmp sil, 0
+    jl .fin
 
     mov r12, rdi
     mov r13, rsi
@@ -409,6 +423,11 @@ arrayRemove:
 arraySwap:
     push rbp
     mov rbp, rsp     ;pila alineada
+
+    cmp sil, 0
+    jl .fin
+    cmp dl, 0
+    jl .fin
 
     mov rax, 0
     mov al, [rdi + 4]  ; size
@@ -581,6 +600,9 @@ listGet:
     push rbp
     mov rbp, rsp     ;pila alineada
 
+    cmp sil, 0
+    jl .fin
+
     mov dl, [rdi + LIST_SIZE]
     cmp sil, dl
     jge .fin
@@ -609,6 +631,9 @@ listRemove:
     push r13
     push r14
     sub rsp, 8
+
+    cmp sil, 0
+    jl .fin
 
     mov r12, rdi
     movzx r13, sil
@@ -672,6 +697,11 @@ listRemove:
 listSwap:
     push rbp
     mov rbp, rsp     ;pila alineada
+
+    cmp sil, 0
+    jl .fin
+    cmp dl, 0
+    jl .fin
 
     mov cl, [rdi + LIST_SIZE]
     cmp dl, cl
