@@ -8,7 +8,7 @@
 #include "lib.h"
 
 int main (void){  
-
+    
     //TEST INTCMP///////////////////////////////////////////////////////////////////////
 
     bool res = true;
@@ -92,13 +92,20 @@ int main (void){
     arrayAddLast(array_str, str_1);
     arrayAddLast(array_str, str_2);
     arrayAddLast(array_str, str_3);
+    arraySwap(array_str, 0, 2);
     uint8_t size_str = arrayGetSize(array_str);
     printf("Test arrayGetSize_str: %d\n", size_str);
 
+
+    char* removed = (char*) arrayRemove(array_str, 2);
+    printf("ARRAY REMOVED: %s\n", removed);
+    strDelete(removed);
     FILE *fp_array = fopen("array_print.txt", "w");
     arrayPrint(array_str, fp_array);
     fprintf(fp_array, "\n");
     arrayDelete(array_str);
+
+    printf("IMPRESO ARRAY STRINGS\n");
 
     //int
     uint8_t capacity_int = 5;
@@ -197,7 +204,17 @@ int main (void){
     cardDelete(carta_1);
     cardDelete(carta_2);
     cardDelete(carta_3);
-    
+
+    array_t *a = arrayNew(TypeString, 20);
+    char *strings[10] = {"aa", "bb", "dd", "ff", "00", "zz", "cc", "ee", "gg", "hh"};
+
+    for (int i = 0; i < 10; i++)
+    {
+        arrayAddLast(a, strings[i]);
+    }
+
+    arrayDelete(a);
+
     printf("FIN\n");
 
     return 0;

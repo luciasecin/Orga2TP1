@@ -46,7 +46,7 @@ void arrayPrint(array_t* a, FILE* pFile) {
         void* item = arrayGet(a, i);
         func(item, pFile);
         if(i != a->size-1)
-            fprintf(pFile, ", ");
+            fprintf(pFile, ",");
     }
     fprintf(pFile, "]");
 }
@@ -80,7 +80,7 @@ void listPrint(list_t* l, FILE* pFile) {
             funcPrint_t* func = getPrintFunction(l->type);
             func(item, pFile);
             if(i != l->size-1)
-                fprintf(pFile, ", ");
+                fprintf(pFile, ",");
         }
     }
     fprintf(pFile, "]");

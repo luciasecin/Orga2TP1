@@ -43,7 +43,7 @@ section .data
     formato_fprintf_i: db "%d", 0
     formato_fprintf_s: db "%s", 0
     formato_fprintf_c_1: db "{", 0
-    formato_fprintf_c_2: db " - ", 0
+    formato_fprintf_c_2: db "-", 0
     formato_fprintf_c_3: db "}", 0
     formato_fprintf_s_vacio: db "NULL", 0
     %define LIST_TYPE 0
@@ -256,6 +256,9 @@ strLen:
 
     mov rcx, 0
 
+    cmp rdi, 0
+    je .fin
+
     .count:
     mov dl, [rdi+rcx]
     cmp dl, 0
@@ -346,6 +349,8 @@ arrayAddLast:
     mov dil, [r15 + 5]   ; cap
     cmp al, dil
     jge .fin
+    cmp rsi, 0
+    je .fin
 
     .agregar:
     mov rdi, [r15 + 8] ;primer puntero del array de data
@@ -412,43 +417,55 @@ arrayRemove:
     push r12
     push r13
     push r14
-    sub rsp, 8
+    push r15
 
     cmp sil, 0
     jl .fueraDeRango
 
     mov r12, rdi
     mov r13, rsi
+    mov r15, r13
+    inc r15         ;i+1
 
     mov al, [r12 + 4]  ; size
     cmp sil, al
     jge .fueraDeRango
 
+    mov rdx, 0
+    mov rdx, r13
     mov rsi, 0
-    mov sil, [r12+4]
-    dec rsi
+    mov sil, dl
     call arrayGet
-    mov r14, rax
-    dec byte [r12 + 4]
+    mov r14, rax            ; pongo en r14 lo que hay que devolver
 
     .ciclo:
-    mov rdi, [r12+4]
-    mov rsi, r13
-    cmp sil, dil
-    je .fin
-    mov rdi, r12
+    mov rdi, [r12 + 4]  ;size
+    mov rsi, r15        ;i a borrar
+    cmp sil, dil        ;si size = i+1, termina
+    je .dec
+    mov rsi, 0          
+    mov rdi, 0
+    mov rdx, r13
+    mov sil, dl
+    mov rdx, 0
+    mov rdi, r15
+    mov dl, dil
+    mov rdi, r12        ;array
+    call arraySwap      ;rdi: a, rsi: i a borrar, rdx: i siguiente a borrar
     inc r13
-    mov rdx, r13    ;j
-    call arraySwap
+    inc r15
     jmp .ciclo
 
     .fueraDeRango:
     mov r14, 0
     jmp .fin
 
+    .dec:
+    dec byte [r12 + 4]
+
     .fin:
     mov rax, r14
-    add rsp, 8
+    pop r15
     pop r14
     pop r13
     pop r12
@@ -577,6 +594,7 @@ listGetSize:
 
     mov rax, 0
     mov al, [rdi + LIST_SIZE]
+    jmp .fin
 
     .listaInvalida:
     mov rax, 0
