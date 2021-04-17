@@ -205,16 +205,6 @@ int main (void){
     cardDelete(carta_2);
     cardDelete(carta_3);
 
-    array_t *a = arrayNew(TypeString, 20);
-    char *strings[10] = {"aa", "bb", "dd", "ff", "00", "zz", "cc", "ee", "gg", "hh"};
-
-    for (int i = 0; i < 10; i++)
-    {
-        arrayAddLast(a, strings[i]);
-    }
-
-    arrayDelete(a);
-
     printf("FIN\n");
 
     return 0;
