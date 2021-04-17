@@ -65,6 +65,9 @@ int main (void){
     FILE *fp_str = fopen("str_print.txt", "w");
     char* s = "hola";
     strPrint(s, fp_str);
+    fprintf(fp_str, "\n");
+    char* sv = "";
+    strPrint(sv, fp_str);
     fclose(fp_str);
 
     //TEST STRCLONE///////////////////////////////////////////////////////////////////////
@@ -194,7 +197,7 @@ int main (void){
     cardDelete(carta_1);
     cardDelete(carta_2);
     cardDelete(carta_3);
-
+    
     printf("FIN\n");
 
     return 0;

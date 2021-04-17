@@ -45,6 +45,7 @@ section .data
     formato_fprintf_c_1: db "{", 0
     formato_fprintf_c_2: db " - ", 0
     formato_fprintf_c_3: db "}", 0
+    formato_fprintf_s_vacio: db "NULL", 0
     %define LIST_TYPE 0
     %define LIST_SIZE 4
     %define LIST_FIRST 8
@@ -96,11 +97,11 @@ intClone:
     push rbp
     mov rbp, rsp     ;pila alineada\
 
-    mov esi, [rdi]
+    mov rsi, [rdi]
     mov rdi, 4
     call malloc
-    mov [rax], esi   
-     
+    mov [rax], esi  
+
     pop rbp
     ret
 
@@ -137,6 +138,7 @@ strCmp:
     push rbp
     mov rbp, rsp     ;pila alineada 
     push rbx
+    sub rsp, 8
     
     mov rcx, 0
 
@@ -162,8 +164,8 @@ strCmp:
     .menor:
     mov rax, 1
     
-
     .fin:
+    add rsp, 8
     pop rbx
     pop rbp
     ret
@@ -215,13 +217,35 @@ strDelete:
 strPrint:
     push rbp
     mov rbp, rsp     ;pila alineada
+    push r12
+    push r13
 
+    mov r12, rdi
+    mov r13, rsi
+
+    call strLen
+    cmp rax, 0
+    je .stringVacio
+    jmp .stringNoVacio
+
+    .stringVacio:
     mov rax, 0
-    mov rdx, rdi
-    mov rdi, rsi
+    mov rdi, r13
+    mov rsi, formato_fprintf_s_vacio
+    call fprintf
+    jmp .fin
+
+
+    .stringNoVacio:
+    mov rax, 0
+    mov rdx, r12
+    mov rdi, r13
     mov rsi, formato_fprintf_s
     call fprintf  
 
+    .fin:
+    pop r13
+    pop r12
     pop rbp
     ret
 
@@ -253,7 +277,7 @@ arrayNew:
     push rbp
     mov rbp, rsp     ;pila alineada
     push r9
-    push r10
+    push r13
     push r12
     sub rsp, 8
 
@@ -264,13 +288,14 @@ arrayNew:
     cmp sil, 0
     jl .fin
 
-    mov r10d, edi ; type
+    mov r13d, edi ; type
     mov r12d, esi
 
+    mov rax, 0
     mov eax, r12d
     mov cl, 8
     mul cl
-    movzx rdi, al
+    mov rdi, rax
     call malloc ; rax ->**data
     mov r9, rax
 
@@ -278,7 +303,7 @@ arrayNew:
     call malloc
 
     mov qword [rax], 0
-    mov [rax], r10d
+    mov [rax], r13d
     mov qword [rax+4], 0
     mov [rax+5], r12d
     mov [rax+8], r9
@@ -286,7 +311,7 @@ arrayNew:
     .fin:
     add rsp, 8
     pop r12
-    pop r10
+    pop r13
     pop r9
     pop rbp
     ret
@@ -307,39 +332,46 @@ arrayGetSize:
 arrayAddLast:
     push rbp
     mov rbp, rsp     ;pila alineada
-    push r9
-    push r10
+    push r13
+    push r14
+    push r15
+    push rbx
+    
+    mov r14, rsi    ; puntero a data
+    mov r15, rdi
 
     mov rax, 0
-    mov rdx, rdi ; struct
-    mov al, [rdx + 4]  ; size
-    mov dil, [rdx + 5]   ; cap
+    mov al, [r15 + 4]  ; size
+    mov rdi, 0
+    mov dil, [r15 + 5]   ; cap
     cmp al, dil
     jge .fin
 
     .agregar:
-    mov rdi, [rdx + 8] ;primer puntero del array de data
+    mov rdi, [r15 + 8] ;primer puntero del array de data
     
     mov cl, 8
     mul cl
     add rax, rdi
     mov rdi, rax ; principio de los 8 bytes del nuevo dato
     
-    inc byte [rdx + 4]
+    inc byte [r15 + 4]  ;size increase
 
-    mov r9, rdi     ; pos del nuevo dato
-    mov r10, rsi    ; puntero a data
+    mov r13, rdi    ; pos del nuevo dato
     
     mov rdi, 0
-    mov edi, [edx]          ; paso a rdi el type de la funcion
+    mov rbx, [r15]          ; paso a rbx el type de la funcion
+    mov edi, ebx
     call getCloneFunction   ; llamo a la funcion para clonar queda en rax el puntero 
-    mov rdi, r10            ; pongo en rdi lo que hay que copiar
+    mov rdi, r14            ; pongo en rdi lo que hay que copiar
     call rax                ; llamo al clonador magico, en rax esta lo clonado
-    mov [r9], rax
+    mov [r13], rax
 
     .fin:
-    pop r10
-    pop r9
+    pop rbx
+    pop r15
+    pop r14
+    pop r13
     pop rbp
     ret
 
@@ -349,13 +381,13 @@ arrayGet:
     mov rbp, rsp     ;pila alineada
 
     cmp sil, 0
-    jl .fin
+    jl .fueraDeRango
 
     mov rax, 0
     mov rdx, rdi ; struct
     mov al, [rdx + 4]  ; size
     cmp sil, al
-    jge .fin
+    jge .fueraDeRango
     mov al, sil
 
     mov rdi, [rdx + 8] ;primer puntero del array de data
@@ -364,6 +396,10 @@ arrayGet:
     mul cl
     add rax, rdi
     mov rax, [rax]
+    jmp .fin
+
+    .fueraDeRango:
+    mov rax, 0
 
     .fin:
     pop rbp
@@ -379,7 +415,7 @@ arrayRemove:
     sub rsp, 8
 
     cmp sil, 0
-    jl .fin
+    jl .fueraDeRango
 
     mov r12, rdi
     mov r13, rsi
@@ -536,9 +572,16 @@ listGetSize:
     push rbp
     mov rbp, rsp     ;pila alineada
 
+    cmp rdi, 0
+    je .listaInvalida
+
     mov rax, 0
     mov al, [rdi + LIST_SIZE]
 
+    .listaInvalida:
+    mov rax, 0
+
+    .fin:
     pop rbp
     ret
 
@@ -601,11 +644,11 @@ listGet:
     mov rbp, rsp     ;pila alineada
 
     cmp sil, 0
-    jl .fin
+    jl .fueraDeRango
 
     mov dl, [rdi + LIST_SIZE]
     cmp sil, dl
-    jge .fin
+    jge .fueraDeRango
     mov rdi, [rdi + LIST_FIRST]
 
     .ciclo:
@@ -618,6 +661,10 @@ listGet:
 
     .salida:
     mov rax, [rdi + NODE_DATA]
+    jmp .fin
+
+    .fueraDeRango:
+    mov rax, 0
 
     .fin:
     pop rbp
@@ -633,7 +680,7 @@ listRemove:
     sub rsp, 8
 
     cmp sil, 0
-    jl .fin
+    jl .fueraDeRango
 
     mov r12, rdi
     movzx r13, sil
@@ -744,6 +791,12 @@ listClone:
     push r12
     push r13
     push rbx
+    sub rsp, 8
+
+    mov r13, 0
+    cmp rdi, 0
+    je .fin
+    
 
     mov r12, rdi
     mov rdi, [r12 + LIST_TYPE]
@@ -766,6 +819,7 @@ listClone:
 
     .fin:
     mov rax, r13
+    add rsp, 8
     pop rbx
     pop r13
     pop r12
@@ -830,6 +884,7 @@ cardNew:
     sub rsp, 8
 
     mov r12, rdi        ;r12 = suit
+    mov r13, 0
     mov r13, rsi        ;r13 = number
 
     mov rdi, 24
@@ -840,6 +895,7 @@ cardNew:
     call strClone
     mov [r14 + CARD_SUIT], rax
 
+    mov rdi, 0
     mov rdi, r13
     call intClone
     mov [r14 + CARD_NUMBER], rax
@@ -920,7 +976,6 @@ cardClone:
     mov rbp, rsp     ;pila alineada
     push r12
     push r13
-    sub rsp, 8
 
     mov r12, rdi
     mov rdi, [r12+CARD_SUIT]
@@ -929,14 +984,11 @@ cardClone:
     mov r13, rax
     
     mov rdi, [r12+CARD_STACKED]
-    cmp rdi, 0
-    je .fin
     call listClone
     mov [r13 + CARD_STACKED], rax
     
     .fin:
     mov rax, r13
-    add rsp, 8
     pop r13
     pop r12
     pop rbp
