@@ -205,6 +205,74 @@ int main (void){
     cardDelete(carta_2);
     cardDelete(carta_3);
 
+    //TESTS OBLIGATORIOS
+
+
+    //Crear un mazo con 5 cartas sobre un arreglo
+    type_t tipo_array = TypeCard;
+    type_t tipo_lista = TypeCard;
+    int8_t capacidad_array = 5;
+    array_t* array = arrayNew(tipo_array, capacidad_array);
+    list_t* lista = listNew(tipo_lista);
+
+
+    int32_t numero1 = 7;
+    int32_t numero2 = 12;
+    int32_t numero3 = 1;
+    int32_t numero4 = 3;
+    int32_t numero5 = 10;
+    
+    char* palo1 = "basto";
+    char* palo2 = "oro";
+    char* palo3 = "copa";
+    char* palo4 = "espada";
+    
+    card_t* carta1 = cardNew(palo1, &numero1);
+    card_t* carta2 = cardNew(palo2, &numero2);
+    card_t* carta3 = cardNew(palo4, &numero3);
+    card_t* carta4 = cardNew(palo3, &numero5);
+    card_t* carta5 = cardNew(palo1, &numero4);
+
+    arrayAddLast(array, carta1);
+    arrayAddLast(array, carta2);
+    arrayAddLast(array, carta3);
+    arrayAddLast(array, carta4);
+    arrayAddLast(array, carta5);
+
+    listAddLast(lista, carta3);
+    listAddLast(lista, carta4);
+    listAddFirst(lista, carta2);
+    listAddLast(lista, carta5);
+    listAddFirst(lista, carta1);
+
+    //Imprimir el mazo.
+    FILE *fp = fopen("pruebas_cortas.txt", "w");
+    arrayPrint(array, fp);
+    fprintf(fp, "\n");
+    listPrint(lista, fp);
+    fprintf(fp, "\n");
+
+    //Apilar una carta cualquiera del mazo sobre otra carta cualquiera.
+    cardAddStacked(arrayGet(array, 2), arrayGet(array, 4));
+    cardAddStacked(listGet(lista, 2), listGet(lista, 4));
+
+    //Imprimir nuevamente el mazo.
+    arrayPrint(array, fp);
+    fprintf(fp, "\n");
+    listPrint(lista, fp);
+
+    //Borrar el mazo.
+    fclose(fp);
+    arrayDelete(array);
+    listDelete(lista);
+    cardDelete(carta1);
+    cardDelete(carta2);
+    cardDelete(carta3);
+    cardDelete(carta4);
+    cardDelete(carta5);
+
+    printf("Pruebas cortas: listo\n");
+
     printf("FIN\n");
 
     return 0;
